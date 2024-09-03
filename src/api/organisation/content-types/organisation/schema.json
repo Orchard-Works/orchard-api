@@ -1,0 +1,42 @@
+{
+  "kind": "collectionType",
+  "collectionName": "organisations",
+  "info": {
+    "singularName": "organisation",
+    "pluralName": "organisations",
+    "displayName": "Organisation",
+    "description": ""
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "name": {
+      "type": "string"
+    },
+    "description": {
+      "type": "text"
+    },
+    "size": {
+      "type": "string"
+    },
+    "location": {
+      "type": "string"
+    },
+    "users": {
+      "type": "relation",
+      "relation": "manyToMany",
+      "target": "plugin::users-permissions.user",
+      "inversedBy": "organisations"
+    },
+    "seat_type": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "api::seat-type.seat-type"
+    },
+    "country": {
+      "type": "string"
+    }
+  }
+}

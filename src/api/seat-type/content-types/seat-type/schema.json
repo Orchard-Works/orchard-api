@@ -1,0 +1,43 @@
+{
+  "kind": "collectionType",
+  "collectionName": "seat_types",
+  "info": {
+    "singularName": "seat-type",
+    "pluralName": "seat-types",
+    "displayName": "SeatType",
+    "description": ""
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "name": {
+      "type": "string"
+    },
+    "price": {
+      "type": "string"
+    },
+    "maxNumberOfSeats": {
+      "type": "integer"
+    },
+    "seatsRange": {
+      "type": "string"
+    },
+    "pricePerSeat": {
+      "type": "string"
+    },
+    "storagePrice": {
+      "type": "string"
+    },
+    "maxStorage": {
+      "type": "string"
+    },
+    "maxChannels": {
+      "type": "integer"
+    },
+    "description": {
+      "type": "text"
+    }
+  }
+}

@@ -362,6 +362,120 @@ export interface AdminTransferTokenPermission extends Schema.CollectionType {
   };
 }
 
+export interface ApiCountryCountry extends Schema.CollectionType {
+  collectionName: 'countries';
+  info: {
+    singularName: 'country';
+    pluralName: 'countries';
+    displayName: 'Country';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    name: Attribute.String;
+    createdAt: Attribute.DateTime;
+    updatedAt: Attribute.DateTime;
+    publishedAt: Attribute.DateTime;
+    createdBy: Attribute.Relation<
+      'api::country.country',
+      'oneToOne',
+      'admin::user'
+    > &
+      Attribute.Private;
+    updatedBy: Attribute.Relation<
+      'api::country.country',
+      'oneToOne',
+      'admin::user'
+    > &
+      Attribute.Private;
+  };
+}
+
+export interface ApiOrganisationOrganisation extends Schema.CollectionType {
+  collectionName: 'organisations';
+  info: {
+    singularName: 'organisation';
+    pluralName: 'organisations';
+    displayName: 'Organisation';
+    description: '';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    name: Attribute.String;
+    description: Attribute.Text;
+    size: Attribute.String;
+    location: Attribute.String;
+    users: Attribute.Relation<
+      'api::organisation.organisation',
+      'manyToMany',
+      'plugin::users-permissions.user'
+    >;
+    seat_type: Attribute.Relation<
+      'api::organisation.organisation',
+      'oneToOne',
+      'api::seat-type.seat-type'
+    >;
+    country: Attribute.String;
+    createdAt: Attribute.DateTime;
+    updatedAt: Attribute.DateTime;
+    publishedAt: Attribute.DateTime;
+    createdBy: Attribute.Relation<
+      'api::organisation.organisation',
+      'oneToOne',
+      'admin::user'
+    > &
+      Attribute.Private;
+    updatedBy: Attribute.Relation<
+      'api::organisation.organisation',
+      'oneToOne',
+      'admin::user'
+    > &
+      Attribute.Private;
+  };
+}
+
+export interface ApiSeatTypeSeatType extends Schema.CollectionType {
+  collectionName: 'seat_types';
+  info: {
+    singularName: 'seat-type';
+    pluralName: 'seat-types';
+    displayName: 'SeatType';
+    description: '';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    name: Attribute.String;
+    price: Attribute.String;
+    maxNumberOfSeats: Attribute.Integer;
+    seatsRange: Attribute.String;
+    pricePerSeat: Attribute.String;
+    storagePrice: Attribute.String;
+    maxStorage: Attribute.String;
+    maxChannels: Attribute.Integer;
+    description: Attribute.Text;
+    createdAt: Attribute.DateTime;
+    updatedAt: Attribute.DateTime;
+    publishedAt: Attribute.DateTime;
+    createdBy: Attribute.Relation<
+      'api::seat-type.seat-type',
+      'oneToOne',
+      'admin::user'
+    > &
+      Attribute.Private;
+    updatedBy: Attribute.Relation<
+      'api::seat-type.seat-type',
+      'oneToOne',
+      'admin::user'
+    > &
+      Attribute.Private;
+  };
+}
+
 export interface PluginUploadFile extends Schema.CollectionType {
   collectionName: 'files';
   info: {
@@ -771,6 +885,11 @@ export interface PluginUsersPermissionsUser extends Schema.CollectionType {
       'manyToOne',
       'plugin::users-permissions.role'
     >;
+    organisations: Attribute.Relation<
+      'plugin::users-permissions.user',
+      'manyToMany',
+      'api::organisation.organisation'
+    >;
     createdAt: Attribute.DateTime;
     updatedAt: Attribute.DateTime;
     createdBy: Attribute.Relation<
@@ -798,6 +917,9 @@ declare module '@strapi/types' {
       'admin::api-token-permission': AdminApiTokenPermission;
       'admin::transfer-token': AdminTransferToken;
       'admin::transfer-token-permission': AdminTransferTokenPermission;
+      'api::country.country': ApiCountryCountry;
+      'api::organisation.organisation': ApiOrganisationOrganisation;
+      'api::seat-type.seat-type': ApiSeatTypeSeatType;
       'plugin::upload.file': PluginUploadFile;
       'plugin::upload.folder': PluginUploadFolder;
       'plugin::content-releases.release': PluginContentReleasesRelease;

@@ -362,120 +362,6 @@ export interface AdminTransferTokenPermission extends Schema.CollectionType {
   };
 }
 
-export interface ApiCountryCountry extends Schema.CollectionType {
-  collectionName: 'countries';
-  info: {
-    singularName: 'country';
-    pluralName: 'countries';
-    displayName: 'Country';
-  };
-  options: {
-    draftAndPublish: true;
-  };
-  attributes: {
-    name: Attribute.String;
-    createdAt: Attribute.DateTime;
-    updatedAt: Attribute.DateTime;
-    publishedAt: Attribute.DateTime;
-    createdBy: Attribute.Relation<
-      'api::country.country',
-      'oneToOne',
-      'admin::user'
-    > &
-      Attribute.Private;
-    updatedBy: Attribute.Relation<
-      'api::country.country',
-      'oneToOne',
-      'admin::user'
-    > &
-      Attribute.Private;
-  };
-}
-
-export interface ApiOrganisationOrganisation extends Schema.CollectionType {
-  collectionName: 'organisations';
-  info: {
-    singularName: 'organisation';
-    pluralName: 'organisations';
-    displayName: 'Organisation';
-    description: '';
-  };
-  options: {
-    draftAndPublish: true;
-  };
-  attributes: {
-    name: Attribute.String;
-    description: Attribute.Text;
-    size: Attribute.String;
-    location: Attribute.String;
-    users: Attribute.Relation<
-      'api::organisation.organisation',
-      'manyToMany',
-      'plugin::users-permissions.user'
-    >;
-    seat_type: Attribute.Relation<
-      'api::organisation.organisation',
-      'oneToOne',
-      'api::seat-type.seat-type'
-    >;
-    country: Attribute.String;
-    createdAt: Attribute.DateTime;
-    updatedAt: Attribute.DateTime;
-    publishedAt: Attribute.DateTime;
-    createdBy: Attribute.Relation<
-      'api::organisation.organisation',
-      'oneToOne',
-      'admin::user'
-    > &
-      Attribute.Private;
-    updatedBy: Attribute.Relation<
-      'api::organisation.organisation',
-      'oneToOne',
-      'admin::user'
-    > &
-      Attribute.Private;
-  };
-}
-
-export interface ApiSeatTypeSeatType extends Schema.CollectionType {
-  collectionName: 'seat_types';
-  info: {
-    singularName: 'seat-type';
-    pluralName: 'seat-types';
-    displayName: 'SeatType';
-    description: '';
-  };
-  options: {
-    draftAndPublish: true;
-  };
-  attributes: {
-    name: Attribute.String;
-    price: Attribute.String;
-    maxNumberOfSeats: Attribute.Integer;
-    seatsRange: Attribute.String;
-    pricePerSeat: Attribute.String;
-    storagePrice: Attribute.String;
-    maxStorage: Attribute.String;
-    maxChannels: Attribute.Integer;
-    description: Attribute.Text;
-    createdAt: Attribute.DateTime;
-    updatedAt: Attribute.DateTime;
-    publishedAt: Attribute.DateTime;
-    createdBy: Attribute.Relation<
-      'api::seat-type.seat-type',
-      'oneToOne',
-      'admin::user'
-    > &
-      Attribute.Private;
-    updatedBy: Attribute.Relation<
-      'api::seat-type.seat-type',
-      'oneToOne',
-      'admin::user'
-    > &
-      Attribute.Private;
-  };
-}
-
 export interface PluginUploadFile extends Schema.CollectionType {
   collectionName: 'files';
   info: {
@@ -891,6 +777,11 @@ export interface PluginUsersPermissionsUser extends Schema.CollectionType {
     >;
     firstName: Attribute.String;
     lastName: Attribute.String;
+    adminOf: Attribute.Relation<
+      'plugin::users-permissions.user',
+      'manyToMany',
+      'api::organisation.organisation'
+    >;
     createdAt: Attribute.DateTime;
     updatedAt: Attribute.DateTime;
     createdBy: Attribute.Relation<
@@ -908,6 +799,218 @@ export interface PluginUsersPermissionsUser extends Schema.CollectionType {
   };
 }
 
+export interface ApiChannelChannel extends Schema.CollectionType {
+  collectionName: 'channels';
+  info: {
+    singularName: 'channel';
+    pluralName: 'channels';
+    displayName: 'Channel';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    name: Attribute.String;
+    description: Attribute.Text;
+    organisation: Attribute.Relation<
+      'api::channel.channel',
+      'manyToOne',
+      'api::organisation.organisation'
+    >;
+    users: Attribute.Relation<
+      'api::channel.channel',
+      'oneToMany',
+      'plugin::users-permissions.user'
+    >;
+    createdAt: Attribute.DateTime;
+    updatedAt: Attribute.DateTime;
+    publishedAt: Attribute.DateTime;
+    createdBy: Attribute.Relation<
+      'api::channel.channel',
+      'oneToOne',
+      'admin::user'
+    > &
+      Attribute.Private;
+    updatedBy: Attribute.Relation<
+      'api::channel.channel',
+      'oneToOne',
+      'admin::user'
+    > &
+      Attribute.Private;
+  };
+}
+
+export interface ApiCountryCountry extends Schema.CollectionType {
+  collectionName: 'countries';
+  info: {
+    singularName: 'country';
+    pluralName: 'countries';
+    displayName: 'Country';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    name: Attribute.String;
+    createdAt: Attribute.DateTime;
+    updatedAt: Attribute.DateTime;
+    publishedAt: Attribute.DateTime;
+    createdBy: Attribute.Relation<
+      'api::country.country',
+      'oneToOne',
+      'admin::user'
+    > &
+      Attribute.Private;
+    updatedBy: Attribute.Relation<
+      'api::country.country',
+      'oneToOne',
+      'admin::user'
+    > &
+      Attribute.Private;
+  };
+}
+
+export interface ApiInvitationInvitation extends Schema.CollectionType {
+  collectionName: 'invitations';
+  info: {
+    singularName: 'invitation';
+    pluralName: 'invitations';
+    displayName: 'Invitation';
+  };
+  options: {
+    draftAndPublish: false;
+  };
+  attributes: {
+    email: Attribute.Email & Attribute.Required;
+    organisation: Attribute.Relation<
+      'api::invitation.invitation',
+      'manyToOne',
+      'api::organisation.organisation'
+    >;
+    invitedBy: Attribute.Relation<
+      'api::invitation.invitation',
+      'manyToOne',
+      'plugin::users-permissions.user'
+    >;
+    status: Attribute.Enumeration<['pending', 'accepted', 'rejected']> &
+      Attribute.DefaultTo<'pending'>;
+    token: Attribute.String & Attribute.Unique;
+    createdAt: Attribute.DateTime;
+    updatedAt: Attribute.DateTime;
+    createdBy: Attribute.Relation<
+      'api::invitation.invitation',
+      'oneToOne',
+      'admin::user'
+    > &
+      Attribute.Private;
+    updatedBy: Attribute.Relation<
+      'api::invitation.invitation',
+      'oneToOne',
+      'admin::user'
+    > &
+      Attribute.Private;
+  };
+}
+
+export interface ApiOrganisationOrganisation extends Schema.CollectionType {
+  collectionName: 'organisations';
+  info: {
+    singularName: 'organisation';
+    pluralName: 'organisations';
+    displayName: 'Organisation';
+    description: '';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    name: Attribute.String;
+    description: Attribute.Text;
+    size: Attribute.String;
+    location: Attribute.String;
+    users: Attribute.Relation<
+      'api::organisation.organisation',
+      'manyToMany',
+      'plugin::users-permissions.user'
+    >;
+    seat_type: Attribute.Relation<
+      'api::organisation.organisation',
+      'oneToOne',
+      'api::seat-type.seat-type'
+    >;
+    country: Attribute.String;
+    admins: Attribute.Relation<
+      'api::organisation.organisation',
+      'manyToMany',
+      'plugin::users-permissions.user'
+    >;
+    invitations: Attribute.Relation<
+      'api::organisation.organisation',
+      'oneToMany',
+      'api::invitation.invitation'
+    >;
+    channels: Attribute.Relation<
+      'api::organisation.organisation',
+      'oneToMany',
+      'api::channel.channel'
+    >;
+    createdAt: Attribute.DateTime;
+    updatedAt: Attribute.DateTime;
+    publishedAt: Attribute.DateTime;
+    createdBy: Attribute.Relation<
+      'api::organisation.organisation',
+      'oneToOne',
+      'admin::user'
+    > &
+      Attribute.Private;
+    updatedBy: Attribute.Relation<
+      'api::organisation.organisation',
+      'oneToOne',
+      'admin::user'
+    > &
+      Attribute.Private;
+  };
+}
+
+export interface ApiSeatTypeSeatType extends Schema.CollectionType {
+  collectionName: 'seat_types';
+  info: {
+    singularName: 'seat-type';
+    pluralName: 'seat-types';
+    displayName: 'SeatType';
+    description: '';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    name: Attribute.String;
+    price: Attribute.String;
+    maxNumberOfSeats: Attribute.Integer;
+    seatsRange: Attribute.String;
+    pricePerSeat: Attribute.String;
+    storagePrice: Attribute.String;
+    maxStorage: Attribute.String;
+    maxChannels: Attribute.Integer;
+    description: Attribute.Text;
+    createdAt: Attribute.DateTime;
+    updatedAt: Attribute.DateTime;
+    publishedAt: Attribute.DateTime;
+    createdBy: Attribute.Relation<
+      'api::seat-type.seat-type',
+      'oneToOne',
+      'admin::user'
+    > &
+      Attribute.Private;
+    updatedBy: Attribute.Relation<
+      'api::seat-type.seat-type',
+      'oneToOne',
+      'admin::user'
+    > &
+      Attribute.Private;
+  };
+}
+
 declare module '@strapi/types' {
   export module Shared {
     export interface ContentTypes {
@@ -918,9 +1021,6 @@ declare module '@strapi/types' {
       'admin::api-token-permission': AdminApiTokenPermission;
       'admin::transfer-token': AdminTransferToken;
       'admin::transfer-token-permission': AdminTransferTokenPermission;
-      'api::country.country': ApiCountryCountry;
-      'api::organisation.organisation': ApiOrganisationOrganisation;
-      'api::seat-type.seat-type': ApiSeatTypeSeatType;
       'plugin::upload.file': PluginUploadFile;
       'plugin::upload.folder': PluginUploadFolder;
       'plugin::content-releases.release': PluginContentReleasesRelease;
@@ -929,6 +1029,11 @@ declare module '@strapi/types' {
       'plugin::users-permissions.permission': PluginUsersPermissionsPermission;
       'plugin::users-permissions.role': PluginUsersPermissionsRole;
       'plugin::users-permissions.user': PluginUsersPermissionsUser;
+      'api::channel.channel': ApiChannelChannel;
+      'api::country.country': ApiCountryCountry;
+      'api::invitation.invitation': ApiInvitationInvitation;
+      'api::organisation.organisation': ApiOrganisationOrganisation;
+      'api::seat-type.seat-type': ApiSeatTypeSeatType;
     }
   }
 }

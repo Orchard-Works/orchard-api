@@ -76,6 +76,12 @@
     },
     "lastName": {
       "type": "string"
+    },
+    "adminOf": {
+      "type": "relation",
+      "relation": "manyToMany",
+      "target": "api::organisation.organisation",
+      "mappedBy": "admins"
     }
   }
 }

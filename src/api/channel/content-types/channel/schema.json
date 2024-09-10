@@ -4,7 +4,8 @@
   "info": {
     "singularName": "channel",
     "pluralName": "channels",
-    "displayName": "Channel"
+    "displayName": "Channel",
+    "description": ""
   },
   "options": {
     "draftAndPublish": true
@@ -27,6 +28,16 @@
       "type": "relation",
       "relation": "oneToMany",
       "target": "plugin::users-permissions.user"
+    },
+    "invitations": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::channel-invitation.channel-invitation",
+      "mappedBy": "channel"
+    },
+    "isInternal": {
+      "type": "boolean",
+      "default": false
     }
   }
 }

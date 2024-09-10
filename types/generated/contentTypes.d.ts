@@ -805,6 +805,7 @@ export interface ApiChannelChannel extends Schema.CollectionType {
     singularName: 'channel';
     pluralName: 'channels';
     displayName: 'Channel';
+    description: '';
   };
   options: {
     draftAndPublish: true;
@@ -822,6 +823,12 @@ export interface ApiChannelChannel extends Schema.CollectionType {
       'oneToMany',
       'plugin::users-permissions.user'
     >;
+    invitations: Attribute.Relation<
+      'api::channel.channel',
+      'oneToMany',
+      'api::channel-invitation.channel-invitation'
+    >;
+    isInternal: Attribute.Boolean & Attribute.DefaultTo<false>;
     createdAt: Attribute.DateTime;
     updatedAt: Attribute.DateTime;
     publishedAt: Attribute.DateTime;
@@ -833,6 +840,49 @@ export interface ApiChannelChannel extends Schema.CollectionType {
       Attribute.Private;
     updatedBy: Attribute.Relation<
       'api::channel.channel',
+      'oneToOne',
+      'admin::user'
+    > &
+      Attribute.Private;
+  };
+}
+
+export interface ApiChannelInvitationChannelInvitation
+  extends Schema.CollectionType {
+  collectionName: 'channel_invitations';
+  info: {
+    singularName: 'channel-invitation';
+    pluralName: 'channel-invitations';
+    displayName: 'Channel Invitation';
+  };
+  options: {
+    draftAndPublish: false;
+  };
+  attributes: {
+    email: Attribute.Email & Attribute.Required;
+    channel: Attribute.Relation<
+      'api::channel-invitation.channel-invitation',
+      'manyToOne',
+      'api::channel.channel'
+    >;
+    status: Attribute.Enumeration<['pending', 'accepted', 'rejected']> &
+      Attribute.DefaultTo<'pending'>;
+    token: Attribute.String & Attribute.Unique;
+    invitedBy: Attribute.Relation<
+      'api::channel-invitation.channel-invitation',
+      'manyToOne',
+      'plugin::users-permissions.user'
+    >;
+    createdAt: Attribute.DateTime;
+    updatedAt: Attribute.DateTime;
+    createdBy: Attribute.Relation<
+      'api::channel-invitation.channel-invitation',
+      'oneToOne',
+      'admin::user'
+    > &
+      Attribute.Private;
+    updatedBy: Attribute.Relation<
+      'api::channel-invitation.channel-invitation',
       'oneToOne',
       'admin::user'
     > &
@@ -1030,6 +1080,7 @@ declare module '@strapi/types' {
       'plugin::users-permissions.role': PluginUsersPermissionsRole;
       'plugin::users-permissions.user': PluginUsersPermissionsUser;
       'api::channel.channel': ApiChannelChannel;
+      'api::channel-invitation.channel-invitation': ApiChannelInvitationChannelInvitation;
       'api::country.country': ApiCountryCountry;
       'api::invitation.invitation': ApiInvitationInvitation;
       'api::organisation.organisation': ApiOrganisationOrganisation;

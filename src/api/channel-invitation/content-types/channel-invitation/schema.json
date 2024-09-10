@@ -1,0 +1,42 @@
+{
+  "kind": "collectionType",
+  "collectionName": "channel_invitations",
+  "info": {
+    "singularName": "channel-invitation",
+    "pluralName": "channel-invitations",
+    "displayName": "Channel Invitation"
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "attributes": {
+    "email": {
+      "type": "email",
+      "required": true
+    },
+    "channel": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::channel.channel",
+      "inversedBy": "invitations"
+    },
+    "status": {
+      "type": "enumeration",
+      "enum": [
+        "pending",
+        "accepted",
+        "rejected"
+      ],
+      "default": "pending"
+    },
+    "token": {
+      "type": "string",
+      "unique": true
+    },
+    "invitedBy": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "plugin::users-permissions.user"
+    }
+  }
+}

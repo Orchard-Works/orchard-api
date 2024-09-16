@@ -4,10 +4,11 @@
  * channel controller
  */
 
-const { createCoreController } = require('@strapi/strapi').factories;
+const {createCoreController} = require('@strapi/strapi').factories;
 const crypto = require('crypto');
 
-module.exports = createCoreController('api::channel.channel', ({ strapi }) => ({
+
+module.exports = createCoreController('api::channel.channel', ({strapi}) => ({
   // Find all channels
   async find(ctx) {
     try {
@@ -23,7 +24,7 @@ module.exports = createCoreController('api::channel.channel', ({ strapi }) => ({
   // Find a specific channel
   async findOne(ctx) {
     try {
-      const { id } = ctx.params;
+      const {id} = ctx.params;
       const channel = await strapi.entityService.findOne('api::channel.channel', id, {
         ...ctx.query,
       });
@@ -36,7 +37,7 @@ module.exports = createCoreController('api::channel.channel', ({ strapi }) => ({
 
   // Create a new channel
   async create(ctx) {
-    const { name, description, organisationId, isInternal, invitedEmails } = ctx.request.body;
+    const {name, description, organisationId, isInternal, invitedEmails} = ctx.request.body;
 
     // Create the channel
     const channel = await strapi.entityService.create('api::channel.channel', {
@@ -57,14 +58,38 @@ module.exports = createCoreController('api::channel.channel', ({ strapi }) => ({
 
           // Create the invitation link
           const invitationLink = `${strapi.config.get('server.frontendUrl')}/channel-invite/${token}`;
+          const emailHtml = `
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Channel Invitation</title>
+</head>
+<body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px;">
+    <div style="background-color: #f0f7ff; border-radius: 10px; padding: 20px; text-align: center;">
+        <img src="${process.env.FRONTEND_URL}/images/logo.svg" alt="Orchard.works Logo" style="width: 100px; margin-bottom: 20px;">
+        <h1 style="color: #0066cc; margin-bottom: 20px;">You're Invited!</h1>
+        <p style="font-size: 18px; margin-bottom: 30px;">
+            You've been invited to join the channel <strong style="color: #0066cc;">"${name}"</strong>.
+        </p>
+        <a href="${invitationLink}" style="background-color: #0066cc; color: white; padding: 12px 24px; text-decoration: none; border-radius: 5px; font-weight: bold; font-size: 16px;">Accept Invitation</a>
+    </div>
+    <div style="margin-top: 30px; text-align: center; color: #666;">
+        <p>If you have any questions, please don't hesitate to contact us.</p>
+        <p>© ${new Date().getFullYear()} Orchard.works. All rights reserved.</p>
+    </div>
+</body>
+</html>
+`;
+
 
           await strapi.plugins['email'].services.email.send({
             to: email,
             subject: `Invitation to join channel "${name}"`,
             text: `You've been invited to join the channel "${name}". Click here to accept: ${invitationLink}`,
-            html: `<p>You've been invited to join the channel "${name}".</p><p><a href="${invitationLink}">Click here to accept</a></p>`
+            html: emailHtml
           });
-          console.log(`Invitation email sent to ${email}`);
 
           // Create an invitation record in the database
           await strapi.entityService.create('api::channel-invitation.channel-invitation', {
@@ -87,7 +112,7 @@ module.exports = createCoreController('api::channel.channel', ({ strapi }) => ({
   // Update a channel
   async update(ctx) {
     try {
-      const { id } = ctx.params;
+      const {id} = ctx.params;
       const updateData = ctx.request.body;
       const updatedChannel = await strapi.entityService.update('api::channel.channel', id, {
         data: updateData,
@@ -101,7 +126,7 @@ module.exports = createCoreController('api::channel.channel', ({ strapi }) => ({
   // Delete a channel
   async delete(ctx) {
     try {
-      const { id } = ctx.params;
+      const {id} = ctx.params;
       const deletedChannel = await strapi.entityService.delete('api::channel.channel', id);
       return deletedChannel;
     } catch (err) {
@@ -111,14 +136,14 @@ module.exports = createCoreController('api::channel.channel', ({ strapi }) => ({
 
   // Accept invitation to a channel
   async acceptInvitation(ctx) {
-    const { token } = ctx.params;
+    const {token} = ctx.params;
     const user = ctx.state.user;
 
 
     console.log('selected user', user);
 
     const invitation = await strapi.entityService.findMany('api::channel-invitation.channel-invitation', {
-      filters: { token },
+      filters: {token},
       populate: ['channel'],
     });
 
@@ -142,20 +167,20 @@ module.exports = createCoreController('api::channel.channel', ({ strapi }) => ({
     }
 
     await strapi.entityService.update('api::channel-invitation.channel-invitation', channelInvitation.id, {
-      data: { status: 'accepted' },
+      data: {status: 'accepted'},
     });
 
     await strapi.entityService.update('api::channel.channel', channelInvitation.channel.id, {
-      data: { users: { connect: [user.id] } },
+      data: {users: {connect: [user.id]}},
     });
 
-    return { status: 'accepted', message: 'Invitation accepted successfully' };
+    return {status: 'accepted', message: 'Invitation accepted successfully'};
   },
   async checkInvitation(ctx) {
-    const { token } = ctx.params;
+    const {token} = ctx.params;
 
     const invitation = await strapi.entityService.findMany('api::channel-invitation.channel-invitation', {
-      filters: { token },
+      filters: {token},
       populate: ['channel.organisation'],
     });
 
@@ -178,11 +203,11 @@ module.exports = createCoreController('api::channel.channel', ({ strapi }) => ({
       };
     }
 
-    return { status: 'authenticated' };
+    return {status: 'authenticated'};
   },
   async inviteUsers(ctx) {
-    const { id } = ctx.params;
-    const { emails } = ctx.request.body;
+    const {id} = ctx.params;
+    const {emails} = ctx.request.body;
 
     const channel = await strapi.entityService.findOne('api::channel.channel', id, {
       populate: ['organisation'],
@@ -197,12 +222,13 @@ module.exports = createCoreController('api::channel.channel', ({ strapi }) => ({
         const token = crypto.randomBytes(32).toString('hex');
         const invitationLink = `${strapi.config.get('server.frontendUrl')}/channel-invite/${token}`;
 
+
         await strapi.plugins['email'].services.email.send({
           to: email,
-          subject: `Invitation to join channel "${channel.name}"`,
-          text: `You've been invited to join the channel "${channel.name}" in the organisation "${channel.organisation.name}". Click here to accept: ${invitationLink}`,
-          html: `<p>You've been invited to join the channel "${channel.name}" in the organisation "${channel.organisation.name}".</p><p><a href="${invitationLink}">Click here to accept</a></p>`
+          subject: `Invitation to join channel "${channelName}"`,
+          html: emailHtml,
         });
+
 
         await strapi.entityService.create('api::channel-invitation.channel-invitation', {
           data: {
@@ -217,6 +243,6 @@ module.exports = createCoreController('api::channel.channel', ({ strapi }) => ({
       }
     }
 
-    return { message: 'Invitations sent successfully' };
+    return {message: 'Invitations sent successfully'};
   },
 }));

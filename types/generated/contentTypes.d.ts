@@ -810,6 +810,11 @@ export interface ApiChannelChannel extends Schema.CollectionType {
   options: {
     draftAndPublish: true;
   };
+  pluginOptions: {
+    lifecycles: {
+      enabled: true;
+    };
+  };
   attributes: {
     name: Attribute.String;
     description: Attribute.Text;

@@ -5,6 +5,7 @@
  */
 
 const { createCoreController } = require('@strapi/strapi').factories;
+const crypto = require('crypto');
 
 module.exports = createCoreController('api::channel.channel', ({ strapi }) => ({
   // Find all channels
@@ -35,32 +36,52 @@ module.exports = createCoreController('api::channel.channel', ({ strapi }) => ({
 
   // Create a new channel
   async create(ctx) {
-    try {
-      const { name, description, organisationId, isInternal, invitedEmails } = ctx.request.body;
+    const { name, description, organisationId, isInternal, invitedEmails } = ctx.request.body;
 
-      if (!name || !organisationId) {
-        return ctx.badRequest('Name and organisation ID are required');
+    // Create the channel
+    const channel = await strapi.entityService.create('api::channel.channel', {
+      data: {
+        name,
+        description,
+        organisation: organisationId,
+        isInternal,
+        publishedAt: new Date(),
+      },
+    });
+
+    // Send invitations
+    if (invitedEmails && invitedEmails.length > 0) {
+      for (const email of invitedEmails) {
+        try {
+          const token = crypto.randomBytes(32).toString('hex');
+
+          // Create the invitation link
+          const invitationLink = `${strapi.config.get('server.frontendUrl')}/channel-invite/${token}`;
+
+          await strapi.plugins['email'].services.email.send({
+            to: email,
+            subject: `Invitation to join channel "${name}"`,
+            text: `You've been invited to join the channel "${name}". Click here to accept: ${invitationLink}`,
+            html: `<p>You've been invited to join the channel "${name}".</p><p><a href="${invitationLink}">Click here to accept</a></p>`
+          });
+          console.log(`Invitation email sent to ${email}`);
+
+          // Create an invitation record in the database
+          await strapi.entityService.create('api::channel-invitation.channel-invitation', {
+            data: {
+              email,
+              channel: channel.id,
+              status: 'pending',
+              token,
+            },
+          });
+        } catch (error) {
+          console.error(`Failed to send invitation email to ${email}:`, error);
+        }
       }
-
-      const channel = await strapi.entityService.create('api::channel.channel', {
-        data: {
-          name,
-          description,
-          organisation: organisationId,
-          isInternal: isInternal || false,
-          publishedAt: new Date(),
-        },
-      });
-
-      // Handle invitations logic here (if needed)
-      if (invitedEmails && Array.isArray(invitedEmails)) {
-        // Implement invitation logic
-      }
-
-      return channel;
-    } catch (err) {
-      ctx.throw(500, err);
     }
+
+    return channel;
   },
 
   // Update a channel
@@ -90,44 +111,112 @@ module.exports = createCoreController('api::channel.channel', ({ strapi }) => ({
 
   // Accept invitation to a channel
   async acceptInvitation(ctx) {
-    try {
-      const { token } = ctx.params;
-      const { user } = ctx.state;
+    const { token } = ctx.params;
+    const user = ctx.state.user;
 
-      if (!user) {
-        return ctx.unauthorized('You must be logged in to accept an invitation');
-      }
 
-      // Implement your invitation acceptance logic here
-      // This is a placeholder implementation
-      const invitation = await strapi.entityService.findMany('api::channel-invitation.channel-invitation', {
-        filters: { token },
-        populate: ['channel'],
-      });
+    console.log('selected user', user);
 
-      if (!invitation || invitation.length === 0) {
-        return ctx.notFound('Invitation not found');
-      }
+    const invitation = await strapi.entityService.findMany('api::channel-invitation.channel-invitation', {
+      filters: { token },
+      populate: ['channel'],
+    });
 
-      const channelInvitation = invitation[0];
-
-      if (channelInvitation.status !== 'pending') {
-        return ctx.badRequest('This invitation has already been processed');
-      }
-
-      // Update invitation status
-      await strapi.entityService.update('api::channel-invitation.channel-invitation', channelInvitation.id, {
-        data: { status: 'accepted' },
-      });
-
-      // Add user to channel
-      await strapi.entityService.update('api::channel.channel', channelInvitation.channel.id, {
-        data: { users: { connect: [user.id] } },
-      });
-
-      return { message: 'Invitation accepted successfully' };
-    } catch (err) {
-      ctx.throw(500, err);
+    if (!invitation || invitation.length === 0) {
+      return ctx.notFound('Invitation not found');
     }
+
+    const channelInvitation = invitation[0];
+
+    if (channelInvitation.status !== 'pending') {
+      return ctx.badRequest('This invitation has already been processed');
+    }
+
+    if (!user) {
+      return {
+        status: 'unauthenticated',
+        email: channelInvitation.email,
+        channelName: channelInvitation.channel.name,
+        organisationId: channelInvitation.channel.organisation.id,
+      };
+    }
+
+    await strapi.entityService.update('api::channel-invitation.channel-invitation', channelInvitation.id, {
+      data: { status: 'accepted' },
+    });
+
+    await strapi.entityService.update('api::channel.channel', channelInvitation.channel.id, {
+      data: { users: { connect: [user.id] } },
+    });
+
+    return { status: 'accepted', message: 'Invitation accepted successfully' };
+  },
+  async checkInvitation(ctx) {
+    const { token } = ctx.params;
+
+    const invitation = await strapi.entityService.findMany('api::channel-invitation.channel-invitation', {
+      filters: { token },
+      populate: ['channel.organisation'],
+    });
+
+    if (!invitation || invitation.length === 0) {
+      return ctx.notFound('Invitation not found');
+    }
+
+    const channelInvitation = invitation[0];
+
+    if (channelInvitation.status !== 'pending') {
+      return ctx.badRequest('This invitation has already been processed');
+    }
+
+    if (!ctx.state.user) {
+      return {
+        status: 'unauthenticated',
+        email: channelInvitation.email,
+        channelName: channelInvitation.channel.name,
+        organisationName: channelInvitation.channel.organisation.name,
+      };
+    }
+
+    return { status: 'authenticated' };
+  },
+  async inviteUsers(ctx) {
+    const { id } = ctx.params;
+    const { emails } = ctx.request.body;
+
+    const channel = await strapi.entityService.findOne('api::channel.channel', id, {
+      populate: ['organisation'],
+    });
+
+    if (!channel) {
+      return ctx.notFound('Channel not found');
+    }
+
+    for (const email of emails) {
+      try {
+        const token = crypto.randomBytes(32).toString('hex');
+        const invitationLink = `${strapi.config.get('server.frontendUrl')}/channel-invite/${token}`;
+
+        await strapi.plugins['email'].services.email.send({
+          to: email,
+          subject: `Invitation to join channel "${channel.name}"`,
+          text: `You've been invited to join the channel "${channel.name}" in the organisation "${channel.organisation.name}". Click here to accept: ${invitationLink}`,
+          html: `<p>You've been invited to join the channel "${channel.name}" in the organisation "${channel.organisation.name}".</p><p><a href="${invitationLink}">Click here to accept</a></p>`
+        });
+
+        await strapi.entityService.create('api::channel-invitation.channel-invitation', {
+          data: {
+            email,
+            channel: id,
+            status: 'pending',
+            token,
+          },
+        });
+      } catch (error) {
+        console.error(`Failed to send invitation email to ${email}:`, error);
+      }
+    }
+
+    return { message: 'Invitations sent successfully' };
   },
 }));

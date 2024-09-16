@@ -57,5 +57,23 @@ module.exports = {
         middlewares: [],
       },
     },
+    {
+      method: 'GET',
+      path: '/channels/check-invitation/:token',
+      handler: 'channel.checkInvitation',
+      config: {
+        auth: false,
+        policies: [],
+      },
+    },
+    {
+      method: 'POST',
+      path: '/channels/:id/invite',
+      handler: 'channel.inviteUsers',
+      config: {
+        policies: [],
+        middlewares: [],
+      },
+    },
   ],
 };

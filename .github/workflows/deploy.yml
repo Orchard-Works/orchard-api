@@ -7,7 +7,7 @@ on:
 
 env:
   REGISTRY: ghcr.io
-  IMAGE_NAME: ${{ github.repository }}
+  IMAGE_NAME: ${{ toLowerCase(github.repository) }}
 
 jobs:
   build-and-push:
@@ -69,7 +69,9 @@ jobs:
           HOST: ${{ secrets.HOST }}
           USER: ${{ secrets.USER }}
           GITHUB_TOKEN: ${{ secrets.GHCR_PAT }}
+          LOWERCASE_REPO: ${{ toLowerCase(github.repository) }}
         run: |
+          sed -i 's|${GITHUB_REPOSITORY}|${LOWERCASE_REPO}|g' docker-compose.yml
           scp docker-compose.yml $USER@$HOST:/opt/apps/orchard-backend/
           ssh $USER@$HOST << EOF
             cd /opt/apps/orchard-backend

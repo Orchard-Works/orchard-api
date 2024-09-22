@@ -105,6 +105,7 @@ jobs:
             export ADMIN_JWT_SECRET="${ADMIN_JWT_SECRET}"
             export APP_KEYS="${APP_KEYS}"
             export API_TOKEN_SALT="${API_TOKEN_SALT}"
+            export SENDGRID_API_KEY="${SENDGRID_API_KEY}"
             docker-compose pull
             docker-compose up -d
             docker logout ghcr.io

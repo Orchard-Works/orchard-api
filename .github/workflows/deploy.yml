@@ -45,6 +45,9 @@ jobs:
     needs: build-and-push
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
       - name: Install SSH key
         uses: shimataro/ssh-key-action@v2
         with:
@@ -57,6 +60,8 @@ jobs:
           USER: ${{ secrets.USER }}
           GITHUB_TOKEN: ${{ secrets.CR_PAT }}
         run: |
+          pwd
+          ls -la
           scp docker-compose.yml $USER@$HOST:/opt/apps/orchard-backend/
           ssh $USER@$HOST << EOF
             cd /opt/apps/orchard-backend
@@ -64,3 +69,4 @@ jobs:
             docker-compose pull
             docker-compose up -d
             docker logout ghcr.io
+          EOF

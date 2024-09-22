@@ -41,6 +41,13 @@ jobs:
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
 
+      - name: Verify image push
+        run: |
+          echo "Image tags:"
+          echo "${{ steps.meta.outputs.tags }}"
+          docker pull ${{ steps.meta.outputs.tags }}
+          docker image ls
+
   deploy:
     needs: build-and-push
     runs-on: ubuntu-latest
@@ -60,10 +67,20 @@ jobs:
           USER: ${{ secrets.USER }}
           GITHUB_TOKEN: ${{ secrets.GHCR_PAT }}
         run: |
+          # Debug: Print the contents of docker-compose.yml
+          cat docker-compose.yml
+
           scp docker-compose.yml $USER@$HOST:/opt/apps/orchard-backend/
           ssh $USER@$HOST << EOF
             cd /opt/apps/orchard-backend
             echo "$GITHUB_TOKEN" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+
+            # Debug: List available images
+            docker image ls
+
+            # Debug: Try to pull the image manually
+            docker pull ${{ steps.meta.outputs.tags }}
+
             docker-compose pull
             docker-compose up -d
             docker logout ghcr.io

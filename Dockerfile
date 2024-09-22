@@ -1,20 +1,11 @@
 FROM node:18-alpine
-
-WORKDIR /usr/src/app
-
-RUN apk add --no-cache python3 make g++
-
-COPY package*.json ./
-
-RUN npm ci --only=production
-
-COPY . .
-
+RUN apk update && apk add --no-cache build-base gcc autoconf automake zlib-dev libpng-dev nasm bash vips-dev
+WORKDIR /app
+COPY ./package.json ./package-lock.json ./
+ENV PATH /opt/node_modules/.bin:$PATH
+ENV NODE_OPTIONS=--max_old_space_size=4096
+RUN npm install
+COPY ./ .
 RUN npm run build
-
-ENV NODE_ENV production
-ENV DATABASE_CLIENT postgres
-
 EXPOSE 1337
-
-CMD ["npm", "run", "start"]
+CMD ["npm", "start"]

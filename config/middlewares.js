@@ -6,9 +6,9 @@ module.exports = [
       contentSecurityPolicy: {
         useDefaults: true,
         directives: {
-          'connect-src': ["'self'", 'https:', 'http://localhost:*', 'ws://localhost:*'],
-          'img-src': ["'self'", 'data:', 'blob:', 'http://localhost:*', 'https:'],
-          'media-src': ["'self'", 'data:', 'blob:', 'http://localhost:*', 'https:'],
+          'connect-src': ["'self'", 'https:', 'wss:', process.env.PUBLIC_URL],
+          'img-src': ["'self'", 'data:', 'blob:', 'https:'],
+          'media-src': ["'self'", 'data:', 'blob:', 'https:'],
           'upgradeInsecureRequests': null,
         },
       },
@@ -19,6 +19,7 @@ module.exports = [
   'strapi::logger',
   'strapi::query',
   'strapi::body',
+  'strapi::session',
   'strapi::favicon',
   'strapi::public',
 ];

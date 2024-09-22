@@ -33,6 +33,7 @@ services:
       - "traefik.http.routers.orchard-strapi.entrypoints=websecure"
       - "traefik.http.routers.orchard-strapi.tls.certresolver=letsencrypt"
       - "traefik.http.services.orchard-strapi.loadbalancer.server.port=1337"
+    network_mode: host
 
 volumes:
   orchard-data:

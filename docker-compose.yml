@@ -8,9 +8,6 @@ services:
     volumes:
       - ./config:/usr/src/app/config
       - ./src:/usr/src/app/src
-      - ./package.json:/usr/src/app/package.json
-      - ./package-lock.json:/usr/src/app/package-lock.json
-      - ./.env:/usr/src/app/.env
       - ./public/uploads:/usr/src/app/public/uploads
     networks:
       - proxy

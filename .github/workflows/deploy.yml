@@ -58,10 +58,8 @@ jobs:
         env:
           HOST: ${{ secrets.HOST }}
           USER: ${{ secrets.USER }}
-          GITHUB_TOKEN: ${{ secrets.CR_PAT }}
+          GITHUB_TOKEN: ${{ secrets.GHCR_PAT }}
         run: |
-          pwd
-          ls -la
           scp docker-compose.yml $USER@$HOST:/opt/apps/orchard-backend/
           ssh $USER@$HOST << EOF
             cd /opt/apps/orchard-backend

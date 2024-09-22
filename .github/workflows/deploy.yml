@@ -109,6 +109,7 @@ jobs:
             export API_TOKEN_SALT="${API_TOKEN_SALT}"
             export SENDGRID_API_KEY="${SENDGRID_API_KEY}"
             export STRAPI_ADMIN_URL="${STRAPI_ADMIN_URL}"
+            export PUBLIC_URL="${PUBLIC_URL}"
             docker-compose pull
             docker-compose up -d
             docker logout ghcr.io

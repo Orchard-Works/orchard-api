@@ -32,6 +32,9 @@ jobs:
         uses: docker/metadata-action@v4
         with:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          tags: |
+            type=raw,value=latest,enable={{is_default_branch}}
+            type=sha,format=long
 
       - name: Build and push Docker image
         uses: docker/build-push-action@v4
@@ -45,7 +48,7 @@ jobs:
         run: |
           echo "Image tags:"
           echo "${{ steps.meta.outputs.tags }}"
-          docker pull ${{ steps.meta.outputs.tags }}
+          docker pull ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
           docker image ls
 
   deploy:
@@ -67,20 +70,10 @@ jobs:
           USER: ${{ secrets.USER }}
           GITHUB_TOKEN: ${{ secrets.GHCR_PAT }}
         run: |
-          # Debug: Print the contents of docker-compose.yml
-          cat docker-compose.yml
-
           scp docker-compose.yml $USER@$HOST:/opt/apps/orchard-backend/
           ssh $USER@$HOST << EOF
             cd /opt/apps/orchard-backend
             echo "$GITHUB_TOKEN" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
-
-            # Debug: List available images
-            docker image ls
-
-            # Debug: Try to pull the image manually
-            docker pull ${{ steps.meta.outputs.tags }}
-
             docker-compose pull
             docker-compose up -d
             docker logout ghcr.io

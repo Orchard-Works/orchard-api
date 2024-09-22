@@ -5,9 +5,23 @@ services:
     image: ghcr.io/${GITHUB_REPOSITORY}:latest
     container_name: orchard-strapi
     restart: unless-stopped
+    environment:
+      - DATABASE_CLIENT=${DATABASE_CLIENT}
+      - DATABASE_HOST=${DATABASE_HOST}
+      - DATABASE_PORT=${DATABASE_PORT}
+      - DATABASE_NAME=${DATABASE_NAME}
+      - DATABASE_USERNAME=${DATABASE_USERNAME}
+      - DATABASE_PASSWORD=${DATABASE_PASSWORD}
+      - DATABASE_SSL=${DATABASE_SSL}
+      - JWT_SECRET=${JWT_SECRET}
+      - ADMIN_JWT_SECRET=${ADMIN_JWT_SECRET}
+      - APP_KEYS=${APP_KEYS}
+      - API_TOKEN_SALT=${API_TOKEN_SALT}
+      - SENDGRID_API_KEY=${SENDGRID_API_KEY}
     volumes:
       - ./config:/usr/src/app/config
       - ./src:/usr/src/app/src
+      - ./.env:/usr/src/app/.env
       - ./public/uploads:/usr/src/app/public/uploads
     networks:
       - proxy

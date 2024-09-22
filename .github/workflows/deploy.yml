@@ -76,13 +76,37 @@ jobs:
           HOST: ${{ secrets.HOST }}
           USER: ${{ secrets.USER }}
           GITHUB_TOKEN: ${{ secrets.GHCR_PAT }}
+          DATABASE_CLIENT: ${{ secrets.DATABASE_CLIENT }}
+          DATABASE_HOST: ${{ secrets.DATABASE_HOST }}
+          DATABASE_PORT: ${{ secrets.DATABASE_PORT }}
+          DATABASE_NAME: ${{ secrets.DATABASE_NAME }}
+          DATABASE_USERNAME: ${{ secrets.DATABASE_USERNAME }}
+          DATABASE_PASSWORD: ${{ secrets.DATABASE_PASSWORD }}
+          DATABASE_SSL: ${{ secrets.DATABASE_SSL }}
+          JWT_SECRET: ${{ secrets.JWT_SECRET }}
+          ADMIN_JWT_SECRET: ${{ secrets.ADMIN_JWT_SECRET }}
+          APP_KEYS: ${{ secrets.APP_KEYS }}
+          API_TOKEN_SALT: ${{ secrets.API_TOKEN_SALT }}
+          SENDGRID_API_KEY: ${{ secrets.SENDGRID_API_KEY }}
         run: |
           sed -i 's|${GITHUB_REPOSITORY}|${{ env.IMAGE_NAME }}|g' docker-compose.yml
           scp docker-compose.yml $USER@$HOST:/opt/apps/orchard-backend/
           ssh $USER@$HOST << EOF
             cd /opt/apps/orchard-backend
             echo "$GITHUB_TOKEN" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+            export DATABASE_CLIENT="${DATABASE_CLIENT}"
+            export DATABASE_HOST="${DATABASE_HOST}"
+            export DATABASE_PORT="${DATABASE_PORT}"
+            export DATABASE_NAME="${DATABASE_NAME}"
+            export DATABASE_USERNAME="${DATABASE_USERNAME}"
+            export DATABASE_PASSWORD="${DATABASE_PASSWORD}"
+            export DATABASE_SSL="${DATABASE_SSL}"
+            export JWT_SECRET="${JWT_SECRET}"
+            export ADMIN_JWT_SECRET="${ADMIN_JWT_SECRET}"
+            export APP_KEYS="${APP_KEYS}"
+            export API_TOKEN_SALT="${API_TOKEN_SALT}"
             docker-compose pull
             docker-compose up -d
             docker logout ghcr.io
           EOF
+

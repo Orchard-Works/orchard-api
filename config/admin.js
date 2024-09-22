@@ -14,4 +14,5 @@ module.exports = ({ env }) => ({
     nps: true,
     promoteEE: true,
   },
+  url: env('ADMIN_URL'),
 });

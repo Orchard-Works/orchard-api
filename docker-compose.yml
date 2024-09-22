@@ -20,6 +20,7 @@ services:
       - SENDGRID_API_KEY=${SENDGRID_API_KEY}
       - STRAPI_ADMIN_URL=${STRAPI_ADMIN_URL}
       - PUBLIC_URL=${PUBLIC_URL}
+      - ADMIN_URL=${ADMIN_URL}
     volumes:
       - ./config:/usr/src/app/config
       - ./src:/usr/src/app/src

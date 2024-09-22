@@ -19,6 +19,7 @@ services:
       - API_TOKEN_SALT=${API_TOKEN_SALT}
       - SENDGRID_API_KEY=${SENDGRID_API_KEY}
       - STRAPI_ADMIN_URL=${STRAPI_ADMIN_URL}
+      - PUBLIC_URL=${PUBLIC_URL}
     volumes:
       - ./config:/usr/src/app/config
       - ./src:/usr/src/app/src

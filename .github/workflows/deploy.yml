@@ -89,6 +89,7 @@ jobs:
           API_TOKEN_SALT: ${{ secrets.API_TOKEN_SALT }}
           SENDGRID_API_KEY: ${{ secrets.SENDGRID_API_KEY }}
           STRAPI_ADMIN_URL: ${{ secrets.STRAPI_ADMIN_URL }}
+          PUBLIC_URL: ${{ secrets.PUBLIC_URL }}
         run: |
           sed -i 's|${GITHUB_REPOSITORY}|${{ env.IMAGE_NAME }}|g' docker-compose.yml
           scp docker-compose.yml $USER@$HOST:/opt/apps/orchard-backend/

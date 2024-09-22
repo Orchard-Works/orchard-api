@@ -1,0 +1,29 @@
+version: '3'
+
+services:
+  strapi:
+    image: ghcr.io/orchard-works/orchard-api:latest
+    container_name: orchard-strapi
+    restart: unless-stopped
+    volumes:
+      - ./config:/usr/src/app/config
+      - ./src:/usr/src/app/src
+      - ./package.json:/usr/src/app/package.json
+      - ./package-lock.json:/usr/src/app/package-lock.json
+      - ./.env:/usr/src/app/.env
+      - ./public/uploads:/usr/src/app/public/uploads
+    networks:
+      - proxy
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.orchard-strapi.rule=Host(`orchard-backend.deant.work`)"
+      - "traefik.http.routers.orchard-strapi.entrypoints=websecure"
+      - "traefik.http.routers.orchard-strapi.tls.certresolver=letsencrypt"
+      - "traefik.http.services.orchard-strapi.loadbalancer.server.port=1337"
+
+volumes:
+  orchard-data:
+
+networks:
+  proxy:
+    external: true

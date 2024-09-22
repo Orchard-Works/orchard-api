@@ -1,9 +1,9 @@
 module.exports = ({ env }) => ({
   auth: {
-    secret: env('ADMIN_JWT_SECRET'),
+    secret: "tobemodified",
   },
   apiToken: {
-    salt: env('API_TOKEN_SALT'),
+    salt: "tobemodified",
   },
   transfer: {
     token: {
@@ -11,27 +11,7 @@ module.exports = ({ env }) => ({
     },
   },
   flags: {
-    nps: env.bool('FLAG_NPS', true),
-    promoteEE: env.bool('FLAG_PROMOTE_EE', true),
-  },
-  url: `${env('PUBLIC_URL')}/admin`,
-  serveAdminPanel: env.bool('SERVE_ADMIN', true),
-  watchIgnoreFiles: [
-    '**/config/sync/**',
-  ],
-  host: env('HOST', '0.0.0.0'),
-  port: env.int('PORT', 1337),
-  admin: {
-    auth: {
-      secret: env('ADMIN_JWT_SECRET'),
-    },
-    watchIgnoreFiles: [
-      '**/config/sync/**',
-    ],
-    security: {
-      csrf: {
-        enabled: false,
-      },
-    },
+    nps: true,
+    promoteEE: true,
   },
 });

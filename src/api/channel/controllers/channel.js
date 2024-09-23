@@ -68,7 +68,7 @@ module.exports = createCoreController('api::channel.channel', ({strapi}) => ({
 </head>
 <body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px;">
     <div style="background-color: #f0f7ff; border-radius: 10px; padding: 20px; text-align: center;">
-        <img src="${process.env.FRONTEND_URL}/images/logo.svg" alt="Orchard.works Logo" style="width: 100px; margin-bottom: 20px;">
+        <img src="https://i.ibb.co/gyLFyZ2/logo-1.png" alt="Orchard Logo" style="width: 50px; margin-bottom: 20px;">
         <h1 style="color: #0066cc; margin-bottom: 20px;">You're Invited!</h1>
         <p style="font-size: 18px; margin-bottom: 30px;">
             You've been invited to join the channel <strong style="color: #0066cc;">"${name}"</strong>.
@@ -139,8 +139,6 @@ module.exports = createCoreController('api::channel.channel', ({strapi}) => ({
     const {token} = ctx.params;
     const user = ctx.state.user;
 
-
-    console.log('selected user', user);
 
     const invitation = await strapi.entityService.findMany('api::channel-invitation.channel-invitation', {
       filters: {token},
@@ -221,11 +219,35 @@ module.exports = createCoreController('api::channel.channel', ({strapi}) => ({
       try {
         const token = crypto.randomBytes(32).toString('hex');
         const invitationLink = `${strapi.config.get('server.frontendUrl')}/channel-invite/${token}`;
+        const emailHtml = `
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Channel Invitation</title>
+</head>
+<body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px;">
+    <div style="background-color: #f0f7ff; border-radius: 10px; padding: 20px; text-align: center;">
+        <img src="https://i.ibb.co/gyLFyZ2/logo-1.png" alt="Orchard Logo" style="width: 100px; margin-bottom: 20px;">
+        <h1 style="color: #0066cc; margin-bottom: 20px;">You're Invited!</h1>
+        <p style="font-size: 18px; margin-bottom: 30px;">
+            You've been invited to join the channel <strong style="color: #0066cc;">"${channel.name}"</strong>.
+        </p>
+        <a href="${invitationLink}" style="background-color: #0066cc; color: white; padding: 12px 24px; text-decoration: none; border-radius: 5px; font-weight: bold; font-size: 16px;">Accept Invitation</a>
+    </div>
+    <div style="margin-top: 30px; text-align: center; color: #666;">
+        <p>If you have any questions, please don't hesitate to contact us.</p>
+        <p>© ${new Date().getFullYear()} Orchard.works. All rights reserved.</p>
+    </div>
+</body>
+</html>
+`;
 
 
         await strapi.plugins['email'].services.email.send({
           to: email,
-          subject: `Invitation to join channel "${channelName}"`,
+          subject: `Invitation to join channel "${channel.name}"`,
           html: emailHtml,
         });
 

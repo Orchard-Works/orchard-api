@@ -6,6 +6,7 @@ services:
     container_name: orchard-strapi
     restart: unless-stopped
     environment:
+      - NODE_ENV=production
       - DATABASE_CLIENT=${DATABASE_CLIENT}
       - DATABASE_HOST=${DATABASE_HOST}
       - DATABASE_PORT=${DATABASE_PORT}
@@ -19,8 +20,10 @@ services:
       - API_TOKEN_SALT=${API_TOKEN_SALT}
       - SENDGRID_API_KEY=${SENDGRID_API_KEY}
       - STRAPI_ADMIN_URL=${STRAPI_ADMIN_URL}
+      - STRAPI_ADMIN_BACKEND_URL=${STRAPI_ADMIN_BACKEND_URL}
       - PUBLIC_URL=${PUBLIC_URL}
       - ADMIN_URL=${ADMIN_URL}
+      - ADMIN_PATH=${ADMIN_PATH}
     volumes:
       - ./config:/usr/src/app/config
       - ./src:/usr/src/app/src

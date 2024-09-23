@@ -1,57 +1,129 @@
-# 🚀 Getting started with Strapi
+# Orchard Backend
 
-Strapi comes with a full featured [Command Line Interface](https://docs.strapi.io/dev-docs/cli) (CLI) which lets you scaffold and manage your project in seconds.
+Orchard Backend is a Strapi-based application that serves as the backend for the Orchard.works platform. It provides APIs for managing organizations, channels, users, and invitations.
 
-### `develop`
+## 🚀 Features
 
-Start your Strapi application with autoReload enabled. [Learn more](https://docs.strapi.io/dev-docs/cli#strapi-develop)
+- User authentication and authorization
+- Organization management
+- Channel creation and management
+- User invitations for organizations and channels
+- Seat type management
+- Email notifications using SendGrid
+
+## 🛠 Tech Stack
+
+- [Strapi](https://strapi.io/) - Headless CMS
+- [Node.js](https://nodejs.org/)
+- [PostgreSQL](https://www.postgresql.org/) - Database
+- [Docker](https://www.docker.com/) - Containerization
+- [GitHub Actions](https://github.com/features/actions) - CI/CD
+
+## 🏗 Project Structure
+
+The project follows the standard Strapi structure with some custom configurations:
+
+- `/config`: Configuration files for the Strapi application
+- `/src`: Source code for the application
+  - `/api`: API definitions for various content types
+  - `/extensions`: Custom extensions for Strapi plugins
+- `/public`: Public assets
+- `/.github/workflows`: GitHub Actions workflow for CI/CD
+
+## 🚦 Getting Started
+
+### Prerequisites
+
+- Node.js (version 18.x or 20.x)
+- npm or yarn
+- PostgreSQL database
+
+### Local Development
+
+1. Clone the repository:
+   ```
+   git clone <repository-url>
+   cd orchard-backend
+   ```
+
+2. Install dependencies:
+   ```
+   npm install
+   ```
+
+3. Copy the `.env.example` file to `.env` and update the environment variables:
+   ```
+   cp .env.example .env
+   ```
+
+4. Start the development server:
+   ```
+   npm run develop
+   ```
+
+The Strapi admin panel will be available at `http://localhost:1337/admin`.
+
+### Docker Deployment
+
+The project includes a `Dockerfile` and `docker-compose.yml` for easy deployment:
+
+1. Build the Docker image:
+   ```
+   docker build -t orchard-backend .
+   ```
+
+2. Start the container:
+   ```
+   docker-compose up -d
+   ```
+
+## 📚 API Documentation
+
+Once the server is running, you can access the API documentation at:
 
 ```
-npm run develop
-# or
-yarn develop
+http://localhost:1337/documentation
 ```
 
-### `start`
+This provides an interactive Swagger UI for exploring and testing the APIs.
 
-Start your Strapi application with autoReload disabled. [Learn more](https://docs.strapi.io/dev-docs/cli#strapi-start)
+## 🔐 Authentication
+
+The project uses Strapi's built-in authentication system. To authenticate:
+
+1. Register a new user or log in with existing credentials
+2. Use the provided JWT token in the `Authorization` header for subsequent requests
+
+## 🔧 Configuration
+
+Key configuration files:
+
+- `config/server.js`: Server configuration
+- `config/database.js`: Database configuration
+- `config/plugins.js`: Plugin configurations (e.g., email provider)
+
+## 📨 Email Notifications
+
+The project uses SendGrid for sending email notifications. Configure your SendGrid API key in the `.env` file:
 
 ```
-npm run start
-# or
-yarn start
+SENDGRID_API_KEY=your_sendgrid_api_key
 ```
 
-### `build`
+## 🚢 Deployment
 
-Build your admin panel. [Learn more](https://docs.strapi.io/dev-docs/cli#strapi-build)
+The project includes a GitHub Actions workflow for automated deployment:
 
-```
-npm run build
-# or
-yarn build
-```
+1. Push changes to the `main` branch
+2. The workflow builds a Docker image and pushes it to GitHub Container Registry
+3. The image is then deployed to the specified server
 
-## ⚙️ Deployment
+Ensure all required secrets are set in your GitHub repository settings.
 
-Strapi gives you many possible deployment options for your project including [Strapi Cloud](https://cloud.strapi.io). Browse the [deployment section of the documentation](https://docs.strapi.io/dev-docs/deployment) to find the best solution for your use case.
+## 🤝 Contributing
 
-## 📚 Learn more
+Contributions are welcome! Please feel free to submit a Pull Request.
 
-- [Resource center](https://strapi.io/resource-center) - Strapi resource center.
-- [Strapi documentation](https://docs.strapi.io) - Official Strapi documentation.
-- [Strapi tutorials](https://strapi.io/tutorials) - List of tutorials made by the core team and the community.
-- [Strapi blog](https://strapi.io/blog) - Official Strapi blog containing articles made by the Strapi team and the community.
-- [Changelog](https://strapi.io/changelog) - Find out about the Strapi product updates, new features and general improvements.
+## 📄 License
 
-Feel free to check out the [Strapi GitHub repository](https://github.com/strapi/strapi). Your feedback and contributions are welcome!
-
-## ✨ Community
-
-- [Discord](https://discord.strapi.io) - Come chat with the Strapi community including the core team.
-- [Forum](https://forum.strapi.io/) - Place to discuss, ask questions and find answers, show your Strapi project and get feedback or just talk with other Community members.
-- [Awesome Strapi](https://github.com/strapi/awesome-strapi) - A curated list of awesome things related to Strapi.
-
----
-
-<sub>🤫 Psst! [Strapi is hiring](https://strapi.io/careers).</sub>
+This project is licensed under the MIT License.

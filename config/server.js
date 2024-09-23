@@ -7,9 +7,12 @@ module.exports = ({ env }) => ({
   webhooks: {
     populateRelations: env.bool('WEBHOOKS_POPULATE_RELATIONS', false),
   },
-  url: env('STRAPI_ADMIN_BACKEND_URL', 'https://orchard-backend.deant.work'),
+  url: env('PUBLIC_URL', 'https://orchard-backend.deant.work'),
   admin: {
     url: env('ADMIN_PATH', '/admin'),
+    auth: {
+      secret: env('ADMIN_JWT_SECRET'),
+    },
   },
   frontendUrl: env('FRONTEND_URL', 'http://localhost:3000'),
 });

@@ -834,6 +834,11 @@ export interface ApiChannelChannel extends Schema.CollectionType {
       'api::channel-invitation.channel-invitation'
     >;
     isInternal: Attribute.Boolean & Attribute.DefaultTo<false>;
+    series: Attribute.Relation<
+      'api::channel.channel',
+      'oneToMany',
+      'api::series.series'
+    >;
     createdAt: Attribute.DateTime;
     updatedAt: Attribute.DateTime;
     publishedAt: Attribute.DateTime;
@@ -1009,6 +1014,11 @@ export interface ApiOrganisationOrganisation extends Schema.CollectionType {
       'oneToMany',
       'api::channel.channel'
     >;
+    series: Attribute.Relation<
+      'api::organisation.organisation',
+      'oneToMany',
+      'api::series.series'
+    >;
     createdAt: Attribute.DateTime;
     updatedAt: Attribute.DateTime;
     publishedAt: Attribute.DateTime;
@@ -1066,6 +1076,48 @@ export interface ApiSeatTypeSeatType extends Schema.CollectionType {
   };
 }
 
+export interface ApiSeriesSeries extends Schema.CollectionType {
+  collectionName: 'series_list';
+  info: {
+    singularName: 'series';
+    pluralName: 'series-list';
+    displayName: 'Series';
+    description: '';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    name: Attribute.String;
+    description: Attribute.Text;
+    channel: Attribute.Relation<
+      'api::series.series',
+      'manyToOne',
+      'api::channel.channel'
+    >;
+    organisation: Attribute.Relation<
+      'api::series.series',
+      'manyToOne',
+      'api::organisation.organisation'
+    >;
+    createdAt: Attribute.DateTime;
+    updatedAt: Attribute.DateTime;
+    publishedAt: Attribute.DateTime;
+    createdBy: Attribute.Relation<
+      'api::series.series',
+      'oneToOne',
+      'admin::user'
+    > &
+      Attribute.Private;
+    updatedBy: Attribute.Relation<
+      'api::series.series',
+      'oneToOne',
+      'admin::user'
+    > &
+      Attribute.Private;
+  };
+}
+
 declare module '@strapi/types' {
   export module Shared {
     export interface ContentTypes {
@@ -1090,6 +1142,7 @@ declare module '@strapi/types' {
       'api::invitation.invitation': ApiInvitationInvitation;
       'api::organisation.organisation': ApiOrganisationOrganisation;
       'api::seat-type.seat-type': ApiSeatTypeSeatType;
+      'api::series.series': ApiSeriesSeries;
     }
   }
 }

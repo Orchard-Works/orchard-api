@@ -42,6 +42,12 @@
     "isInternal": {
       "type": "boolean",
       "default": false
+    },
+    "series": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::series.series",
+      "mappedBy": "channel"
     }
   }
 }

@@ -1,0 +1,34 @@
+{
+  "kind": "collectionType",
+  "collectionName": "series_list",
+  "info": {
+    "singularName": "series",
+    "pluralName": "series-list",
+    "displayName": "Series",
+    "description": ""
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "name": {
+      "type": "string"
+    },
+    "description": {
+      "type": "text"
+    },
+    "channel": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::channel.channel",
+      "inversedBy": "series"
+    },
+    "organisation": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::organisation.organisation",
+      "inversedBy": "series"
+    }
+  }
+}

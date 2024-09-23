@@ -34,6 +34,8 @@ services:
       - "traefik.http.routers.orchard-strapi.entrypoints=websecure"
       - "traefik.http.routers.orchard-strapi.tls.certresolver=letsencrypt"
       - "traefik.http.services.orchard-strapi.loadbalancer.server.port=1337"
+      - "traefik.http.middlewares.strapi-stripprefix.stripprefix.prefixes=/api"
+      - "traefik.http.routers.orchard-strapi.middlewares=strapi-stripprefix"
 
 volumes:
   orchard-data:

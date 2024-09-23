@@ -7,9 +7,9 @@ module.exports = ({ env }) => ({
   webhooks: {
     populateRelations: env.bool('WEBHOOKS_POPULATE_RELATIONS', false),
   },
-  url: env('PUBLIC_URL', 'http://localhost:1337'),
+  url: env('STRAPI_ADMIN_BACKEND_URL', 'https://orchard-backend.deant.work'),
   admin: {
-    url: env('ADMIN_URL', '/admin'),
+    url: env('ADMIN_PATH', '/admin'),
   },
   frontendUrl: env('FRONTEND_URL', 'http://localhost:3000'),
 });

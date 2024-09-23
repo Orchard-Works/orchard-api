@@ -14,5 +14,4 @@ module.exports = ({ env }) => ({
     nps: true,
     promoteEE: true,
   },
-  url: env('ADMIN_URL'),
-});
+  url: env('STRAPI_ADMIN_BACKEND_URL', 'https://orchard-backend.deant.work'),});

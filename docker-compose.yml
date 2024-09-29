@@ -24,6 +24,7 @@ services:
       - PUBLIC_URL=${PUBLIC_URL}
       - ADMIN_URL=${ADMIN_URL}
       - ADMIN_PATH=${ADMIN_PATH}
+      - FRONTEND_URL=${FRONTEND_URL}
     volumes:
       - ./config:/usr/src/app/config
       - ./src:/usr/src/app/src

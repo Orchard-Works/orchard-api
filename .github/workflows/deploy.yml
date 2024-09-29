@@ -93,6 +93,7 @@ jobs:
           ADMIN_URL: ${{ secrets.ADMIN_URL }}
           STRAPI_ADMIN_BACKEND_URL: ${{ secrets.STRAPI_ADMIN_BACKEND_URL }}
           ADMIN_PATH: ${{ secrets.ADMIN_PATH }}
+          FRONTEND_URL: ${{ secrets.FRONTEND_URL }}
         run: |
           sed -i 's|${GITHUB_REPOSITORY}|${{ env.IMAGE_NAME }}|g' docker-compose.yml
           scp docker-compose.yml $USER@$HOST:/opt/apps/orchard-backend/
@@ -116,6 +117,7 @@ jobs:
             export ADMIN_URL="${ADMIN_URL}"
             export ADMIN_PATH="${ADMIN_PATH}"
             export STRAPI_ADMIN_BACKEND_URL="${STRAPI_ADMIN_BACKEND_URL}"
+            export FRONTEND_URL="${FRONTEND_URL}"
             docker-compose pull
             docker-compose up -d
             docker logout ghcr.io

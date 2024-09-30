@@ -29,6 +29,12 @@
       "relation": "manyToOne",
       "target": "api::organisation.organisation",
       "inversedBy": "series"
+    },
+    "users": {
+      "type": "relation",
+      "relation": "manyToMany",
+      "target": "plugin::users-permissions.user",
+      "mappedBy": "series"
     }
   }
 }

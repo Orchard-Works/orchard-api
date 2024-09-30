@@ -782,6 +782,16 @@ export interface PluginUsersPermissionsUser extends Schema.CollectionType {
       'manyToMany',
       'api::organisation.organisation'
     >;
+    channels: Attribute.Relation<
+      'plugin::users-permissions.user',
+      'manyToMany',
+      'api::channel.channel'
+    >;
+    series: Attribute.Relation<
+      'plugin::users-permissions.user',
+      'manyToMany',
+      'api::series.series'
+    >;
     createdAt: Attribute.DateTime;
     updatedAt: Attribute.DateTime;
     createdBy: Attribute.Relation<
@@ -936,25 +946,40 @@ export interface ApiInvitationInvitation extends Schema.CollectionType {
     singularName: 'invitation';
     pluralName: 'invitations';
     displayName: 'Invitation';
+    description: 'Invitations for organizations, channels, and series';
   };
   options: {
     draftAndPublish: false;
   };
   attributes: {
     email: Attribute.Email & Attribute.Required;
-    organisation: Attribute.Relation<
-      'api::invitation.invitation',
-      'manyToOne',
-      'api::organisation.organisation'
-    >;
+    status: Attribute.Enumeration<['pending', 'accepted', 'rejected']> &
+      Attribute.DefaultTo<'pending'>;
+    token: Attribute.String & Attribute.Unique;
     invitedBy: Attribute.Relation<
       'api::invitation.invitation',
       'manyToOne',
       'plugin::users-permissions.user'
     >;
-    status: Attribute.Enumeration<['pending', 'accepted', 'rejected']> &
-      Attribute.DefaultTo<'pending'>;
-    token: Attribute.String & Attribute.Unique;
+    organisation: Attribute.Relation<
+      'api::invitation.invitation',
+      'manyToOne',
+      'api::organisation.organisation'
+    >;
+    channel: Attribute.Relation<
+      'api::invitation.invitation',
+      'manyToOne',
+      'api::channel.channel'
+    >;
+    series: Attribute.Relation<
+      'api::invitation.invitation',
+      'manyToOne',
+      'api::series.series'
+    >;
+    invitationType: Attribute.Enumeration<
+      ['organisation', 'channel', 'series']
+    > &
+      Attribute.Required;
     createdAt: Attribute.DateTime;
     updatedAt: Attribute.DateTime;
     createdBy: Attribute.Relation<
@@ -1099,6 +1124,11 @@ export interface ApiSeriesSeries extends Schema.CollectionType {
       'api::series.series',
       'manyToOne',
       'api::organisation.organisation'
+    >;
+    users: Attribute.Relation<
+      'api::series.series',
+      'manyToMany',
+      'plugin::users-permissions.user'
     >;
     createdAt: Attribute.DateTime;
     updatedAt: Attribute.DateTime;

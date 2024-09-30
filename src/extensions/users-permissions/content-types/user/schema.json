@@ -82,6 +82,19 @@
       "relation": "manyToMany",
       "target": "api::organisation.organisation",
       "mappedBy": "admins"
+    },
+    "channels": {
+      "type": "relation",
+      "relation": "manyToMany",
+      "target": "api::channel.channel",
+      "inversedBy": "users"
+    },
+    "series": {
+      "type": "relation",
+      "relation": "manyToMany",
+      "target": "api::series.series",
+      "inversedBy": "users"
     }
+
   }
 }

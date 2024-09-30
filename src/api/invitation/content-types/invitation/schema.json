@@ -4,7 +4,8 @@
   "info": {
     "singularName": "invitation",
     "pluralName": "invitations",
-    "displayName": "Invitation"
+    "displayName": "Invitation",
+    "description": "Invitations for organizations, channels, and series"
   },
   "options": {
     "draftAndPublish": false
@@ -13,17 +14,6 @@
     "email": {
       "type": "email",
       "required": true
-    },
-    "organisation": {
-      "type": "relation",
-      "relation": "manyToOne",
-      "target": "api::organisation.organisation",
-      "inversedBy": "invitations"
-    },
-    "invitedBy": {
-      "type": "relation",
-      "relation": "manyToOne",
-      "target": "plugin::users-permissions.user"
     },
     "status": {
       "type": "enumeration",
@@ -37,6 +27,35 @@
     "token": {
       "type": "string",
       "unique": true
+    },
+    "invitedBy": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "plugin::users-permissions.user"
+    },
+    "organisation": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::organisation.organisation"
+    },
+    "channel": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::channel.channel"
+    },
+    "series": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::series.series"
+    },
+    "invitationType": {
+      "type": "enumeration",
+      "enum": [
+        "organisation",
+        "channel",
+        "series"
+      ],
+      "required": true
     }
   }
 }

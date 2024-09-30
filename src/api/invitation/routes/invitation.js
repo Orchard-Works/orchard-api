@@ -22,17 +22,8 @@ module.exports = {
       },
     },
     {
-      method: 'PUT',
-      path: '/invitations/:token/accept',
-      handler: 'invitation.accept',
-      config: {
-        policies: [],
-        middlewares: [],
-      },
-    },
-    {
       method: 'GET',
-      path: '/invitations/check/:type/:token',
+      path: '/invitations/check/:token',
       handler: 'invitation.checkInvitation',
       config: {
         auth: false,
@@ -41,7 +32,7 @@ module.exports = {
     },
     {
       method: 'POST',
-      path: '/invitations/accept/:type/:token',
+      path: '/invitations/accept/:token',
       handler: 'invitation.accept',
       config: {
         policies: [],

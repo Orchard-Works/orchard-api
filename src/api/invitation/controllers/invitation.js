@@ -53,35 +53,42 @@ module.exports = createCoreController('api::invitation.invitation', ({ strapi })
   },
 
   async accept(ctx) {
-    const { type, token } = ctx.params;
+    const { token } = ctx.params;
     const user = ctx.state.user;
 
     if (!user) {
       return ctx.unauthorized('You must be logged in to accept an invitation');
     }
 
-    const invitation = await strapi.entityService.findOne('api::invitation.invitation', { token }, { populate: ['organisation', 'channel', 'series'] });
+    console.log(token)
 
-    if (!invitation) {
+    const invitation = await strapi.entityService.findMany('api::invitation.invitation', {
+      filters: { token: token },
+      populate: ['organisation', 'channel', 'series'],
+    });
+
+    if (!invitation || invitation.length === 0) {
       return ctx.notFound('Invitation not found');
     }
 
-    if (invitation.status !== 'pending') {
+    const invitationData = invitation[0];
+
+    if (invitationData.status !== 'pending') {
       return ctx.badRequest('This invitation has already been processed');
     }
 
     // Update invitation status
-    await strapi.entityService.update('api::invitation.invitation', invitation.id, { data: { status: 'accepted' } });
+    await strapi.entityService.update('api::invitation.invitation', invitationData.id, { data: { status: 'accepted' } });
 
-    switch (invitation.invitationType) {
+    switch (invitationData.invitationType) {
       case 'organisation':
-        await this.addUserToOrganisation(user.id, invitation.organisation.id);
+        await this.addUserToOrganisation(user.id, invitationData.organisation.id);
         break;
       case 'channel':
-        await this.addUserToChannel(user.id, invitation.channel.id);
+        await this.addUserToChannel(user.id, invitationData.channel.id);
         break;
       case 'series':
-        await this.addUserToSeries(user.id, invitation.series.id);
+        await this.addUserToSeries(user.id, invitationData.series.id);
         break;
     }
 
@@ -203,12 +210,13 @@ module.exports = createCoreController('api::invitation.invitation', ({ strapi })
       html: emailTemplate,
     });
   },
+
   async checkInvitation(ctx) {
-    const { type, token } = ctx.params;
+    const { token } = ctx.params;
 
     try {
       const invitation = await strapi.entityService.findMany('api::invitation.invitation', {
-        filters: { token: token, invitationType: type },
+        filters: { token: token },
         populate: ['organisation', 'channel', 'series'],
       });
 

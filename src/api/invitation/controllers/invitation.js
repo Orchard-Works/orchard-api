@@ -136,9 +136,65 @@ module.exports = createCoreController('api::invitation.invitation', ({ strapi })
     }
 
     const emailTemplate = `
-      <h1>You've been invited!</h1>
-      <p>You've been invited to join ${targetName} on Orchard.works.</p>
-      <p><a href="${invitationLink}">Click here to accept the invitation</a></p>
+      <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Invitation to Orchard.works</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .container {
+            background-color: #f0f7ff;
+            border-radius: 10px;
+            padding: 30px;
+            text-align: center;
+        }
+        .logo {
+            width: 100px;
+            margin-bottom: 20px;
+        }
+        h1 {
+            color: #f5755a;
+            margin-bottom: 20px;
+        }
+        .button {
+            display: inline-block;
+            background-color: #f5755a;
+            color: white;
+            padding: 12px 24px;
+            text-decoration: none;
+            border-radius: 5px;
+            font-weight: bold;
+            margin-top: 20px;
+        }
+        .footer {
+            margin-top: 30px;
+            font-size: 12px;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>You're Invited!</h1>
+        <p>You've been invited to join <strong>${targetName}</strong> on Orchard.works, the Intelligent Visual Data Platform.</p>
+        <p>Orchard.works enables effective communication, training, and education through visual artifacts such as animations and infographics.</p>
+        <a href="${invitationLink}" class="button">Accept Invitation</a>
+    </div>
+    <div class="footer">
+        <p>If you have any questions, please don't hesitate to contact us.</p>
+        <p>© ${new Date().getFullYear()} Orchard.works. All rights reserved.</p>
+    </div>
+</body>
+</html>
     `;
 
     await strapi.plugins['email'].services.email.send({

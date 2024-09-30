@@ -30,5 +30,22 @@ module.exports = {
         middlewares: [],
       },
     },
+    {
+      method: 'GET',
+      path: '/invitations/check/:type/:token',
+      handler: 'invitation.checkInvitation',
+      config: {
+        auth: false,
+        policies: [],
+      },
+    },
+    {
+      method: 'POST',
+      path: '/invitations/accept/:type/:token',
+      handler: 'invitation.accept',
+      config: {
+        policies: [],
+      },
+    },
   ],
 };

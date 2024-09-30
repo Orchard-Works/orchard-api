@@ -3,45 +3,57 @@ const crypto = require('crypto');
 
 module.exports = createCoreController('api::invitation.invitation', ({ strapi }) => ({
   async create(ctx) {
-    const { email, invitationType, targetId } = ctx.request.body;
+    const { emails, invitationType, targetId } = ctx.request.body;
     const user = ctx.state.user;
 
     if (!user) {
       return ctx.unauthorized('You must be logged in to create invitations');
     }
 
-    let invitationData = {
-      email,
-      invitationType,
-      invitedBy: user.id,
-      status: 'pending',
-      token: crypto.randomBytes(32).toString('hex')
-    };
-
-    switch (invitationType) {
-      case 'organisation':
-        invitationData.organisation = targetId;
-        break;
-      case 'channel':
-        invitationData.channel = targetId;
-        break;
-      case 'series':
-        invitationData.series = targetId;
-        break;
-      default:
-        return ctx.badRequest('Invalid invitation type');
+    if (!Array.isArray(emails) || emails.length === 0) {
+      return ctx.badRequest('Emails must be provided as a non-empty array');
     }
 
-    const invitation = await strapi.entityService.create('api::invitation.invitation', { data: invitationData });
+    const invitations = [];
 
-    // Send invitation email
-    await this.sendInvitationEmail(invitation);
+    for (const email of emails) {
+      const invitationData = {
+        email,
+        invitationType,
+        invitedBy: user.id,
+        status: 'pending',
+        token: crypto.randomBytes(32).toString('hex')
+      };
 
-    return invitation;
+      switch (invitationType) {
+        case 'organisation':
+          invitationData.organisation = targetId;
+          break;
+        case 'channel':
+          invitationData.channel = targetId;
+          break;
+        case 'series':
+          invitationData.series = targetId;
+          break;
+        default:
+          return ctx.badRequest('Invalid invitation type');
+      }
+
+      const invitation = await strapi.entityService.create('api::invitation.invitation', {
+        data: invitationData,
+        populate: ['organisation', 'channel', 'series']
+      });
+      invitations.push(invitation);
+
+      // Send invitation email
+      await this.sendInvitationEmail(invitation);
+    }
+
+    return { invitations };
   },
 
   async accept(ctx) {
-    const { token } = ctx.params;
+    const { type, token } = ctx.params;
     const user = ctx.state.user;
 
     if (!user) {
@@ -111,15 +123,15 @@ module.exports = createCoreController('api::invitation.invitation', ({ strapi })
     switch (invitation.invitationType) {
       case 'organisation':
         targetName = invitation.organisation.name;
-        invitationLink = `${process.env.FRONTEND_URL}/invite/organisation/${invitation.token}`;
+        invitationLink = `${strapi.config.get('server.frontendUrl')}/invite/organisation/${invitation.token}`;
         break;
       case 'channel':
         targetName = invitation.channel.name;
-        invitationLink = `${process.env.FRONTEND_URL}/invite/channel/${invitation.token}`;
+        invitationLink = `${strapi.config.get('server.frontendUrl')}/invite/channel/${invitation.token}`;
         break;
       case 'series':
         targetName = invitation.series.name;
-        invitationLink = `${process.env.FRONTEND_URL}/invite/series/${invitation.token}`;
+        invitationLink = `${strapi.config.get('server.frontendUrl')}/invite/series/${invitation.token}`;
         break;
     }
 
@@ -134,5 +146,53 @@ module.exports = createCoreController('api::invitation.invitation', ({ strapi })
       subject: `Invitation to join ${targetName} on Orchard.works`,
       html: emailTemplate,
     });
-  }
+  },
+  async checkInvitation(ctx) {
+    const { type, token } = ctx.params;
+
+    try {
+      const invitation = await strapi.entityService.findMany('api::invitation.invitation', {
+        filters: { token: token, invitationType: type },
+        populate: ['organisation', 'channel', 'series'],
+      });
+
+      if (!invitation || invitation.length === 0) {
+        return ctx.notFound('Invitation not found');
+      }
+
+      const invitationData = invitation[0];
+
+      if (invitationData.status !== 'pending') {
+        return ctx.badRequest('This invitation has already been processed');
+      }
+
+      let entityName, entityType;
+      switch (invitationData.invitationType) {
+        case 'organisation':
+          entityName = invitationData.organisation.name;
+          entityType = 'Organisation';
+          break;
+        case 'channel':
+          entityName = invitationData.channel.name;
+          entityType = 'Channel';
+          break;
+        case 'series':
+          entityName = invitationData.series.name;
+          entityType = 'Series';
+          break;
+        default:
+          return ctx.badRequest('Invalid invitation type');
+      }
+
+      return {
+        email: invitationData.email,
+        entityName,
+        entityType,
+        invitationType: invitationData.invitationType,
+      };
+
+    } catch (err) {
+      ctx.throw(500, 'Error checking invitation');
+    }
+  },
 }));

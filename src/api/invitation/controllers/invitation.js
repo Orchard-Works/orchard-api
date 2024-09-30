@@ -187,7 +187,7 @@ module.exports = createCoreController('api::invitation.invitation', ({ strapi })
         <h1>You're Invited!</h1>
         <p>You've been invited to join <strong>${targetName}</strong> on Orchard.works, the Intelligent Visual Data Platform.</p>
         <p>Orchard.works enables effective communication, training, and education through visual artifacts such as animations and infographics.</p>
-        <a href="${invitationLink}" class="button">Accept Invitation</a>
+        <a href="${invitationLink}" class="button" style="color: white">Accept Invitation</a>
     </div>
     <div class="footer">
         <p>If you have any questions, please don't hesitate to contact us.</p>

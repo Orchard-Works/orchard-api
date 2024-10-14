@@ -940,6 +940,46 @@ export interface ApiCountryCountry extends Schema.CollectionType {
   };
 }
 
+export interface ApiEpisodeEpisode extends Schema.CollectionType {
+  collectionName: 'episodes';
+  info: {
+    singularName: 'episode';
+    pluralName: 'episodes';
+    displayName: 'Episode';
+    description: 'Content episodes for series';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    title: Attribute.String & Attribute.Required;
+    description: Attribute.Text;
+    content: Attribute.Media<'images' | 'files' | 'videos'> &
+      Attribute.Required;
+    order: Attribute.Integer & Attribute.Required;
+    series: Attribute.Relation<
+      'api::episode.episode',
+      'manyToOne',
+      'api::series.series'
+    >;
+    createdAt: Attribute.DateTime;
+    updatedAt: Attribute.DateTime;
+    publishedAt: Attribute.DateTime;
+    createdBy: Attribute.Relation<
+      'api::episode.episode',
+      'oneToOne',
+      'admin::user'
+    > &
+      Attribute.Private;
+    updatedBy: Attribute.Relation<
+      'api::episode.episode',
+      'oneToOne',
+      'admin::user'
+    > &
+      Attribute.Private;
+  };
+}
+
 export interface ApiInvitationInvitation extends Schema.CollectionType {
   collectionName: 'invitations';
   info: {
@@ -1130,6 +1170,11 @@ export interface ApiSeriesSeries extends Schema.CollectionType {
       'manyToMany',
       'plugin::users-permissions.user'
     >;
+    episodes: Attribute.Relation<
+      'api::series.series',
+      'oneToMany',
+      'api::episode.episode'
+    >;
     createdAt: Attribute.DateTime;
     updatedAt: Attribute.DateTime;
     publishedAt: Attribute.DateTime;
@@ -1169,6 +1214,7 @@ declare module '@strapi/types' {
       'api::channel.channel': ApiChannelChannel;
       'api::channel-invitation.channel-invitation': ApiChannelInvitationChannelInvitation;
       'api::country.country': ApiCountryCountry;
+      'api::episode.episode': ApiEpisodeEpisode;
       'api::invitation.invitation': ApiInvitationInvitation;
       'api::organisation.organisation': ApiOrganisationOrganisation;
       'api::seat-type.seat-type': ApiSeatTypeSeatType;

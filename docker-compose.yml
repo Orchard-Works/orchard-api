@@ -25,6 +25,9 @@ services:
       - ADMIN_URL=${ADMIN_URL}
       - ADMIN_PATH=${ADMIN_PATH}
       - FRONTEND_URL=${FRONTEND_URL}
+      - CLOUDINARY_NAME=${CLOUDINARY_NAME}
+      - CLOUDINARY_KEY=${CLOUDINARY_KEY}
+      - CLOUDINARY_SECRET=${CLOUDINARY_SECRET}
     volumes:
       - ./config:/usr/src/app/config
       - ./src:/usr/src/app/src

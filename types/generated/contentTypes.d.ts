@@ -809,6 +809,55 @@ export interface PluginUsersPermissionsUser extends Schema.CollectionType {
   };
 }
 
+export interface ApiAgoraTokenAgoraToken extends Schema.CollectionType {
+  collectionName: 'agora_tokens';
+  info: {
+    singularName: 'agora-token';
+    pluralName: 'agora-tokens';
+    displayName: 'Agora Token';
+    description: 'Store and manage Agora RTC tokens';
+  };
+  options: {
+    draftAndPublish: false;
+  };
+  attributes: {
+    token: Attribute.Text & Attribute.Required;
+    channelName: Attribute.String & Attribute.Required;
+    expiresAt: Attribute.DateTime & Attribute.Required;
+    user: Attribute.Relation<
+      'api::agora-token.agora-token',
+      'manyToOne',
+      'plugin::users-permissions.user'
+    > &
+      Attribute.Required;
+    organisation: Attribute.Relation<
+      'api::agora-token.agora-token',
+      'manyToOne',
+      'api::organisation.organisation'
+    > &
+      Attribute.Required;
+    livestream: Attribute.Relation<
+      'api::agora-token.agora-token',
+      'manyToOne',
+      'api::livestream.livestream'
+    >;
+    createdAt: Attribute.DateTime;
+    updatedAt: Attribute.DateTime;
+    createdBy: Attribute.Relation<
+      'api::agora-token.agora-token',
+      'oneToOne',
+      'admin::user'
+    > &
+      Attribute.Private;
+    updatedBy: Attribute.Relation<
+      'api::agora-token.agora-token',
+      'oneToOne',
+      'admin::user'
+    > &
+      Attribute.Private;
+  };
+}
+
 export interface ApiChannelChannel extends Schema.CollectionType {
   collectionName: 'channels';
   info: {
@@ -1037,6 +1086,77 @@ export interface ApiInvitationInvitation extends Schema.CollectionType {
   };
 }
 
+export interface ApiLivestreamLivestream extends Schema.CollectionType {
+  collectionName: 'livestreams';
+  info: {
+    singularName: 'livestream';
+    pluralName: 'livestreams';
+    displayName: 'Livestream';
+    description: 'Manage live streaming sessions within organizations';
+  };
+  options: {
+    draftAndPublish: false;
+  };
+  attributes: {
+    title: Attribute.String & Attribute.Required;
+    description: Attribute.Text;
+    status: Attribute.Enumeration<['scheduled', 'live', 'ended']> &
+      Attribute.DefaultTo<'scheduled'>;
+    startedAt: Attribute.DateTime;
+    endedAt: Attribute.DateTime;
+    scheduledStartTime: Attribute.DateTime;
+    viewerCount: Attribute.Integer & Attribute.DefaultTo<0>;
+    recordingUrl: Attribute.String;
+    agoraChannel: Attribute.String & Attribute.Unique;
+    agoraToken: Attribute.String;
+    isPrivate: Attribute.Boolean & Attribute.DefaultTo<false>;
+    thumbnailUrl: Attribute.String;
+    allowChat: Attribute.Boolean & Attribute.DefaultTo<true>;
+    maxViewers: Attribute.Integer;
+    organisation: Attribute.Relation<
+      'api::livestream.livestream',
+      'manyToOne',
+      'api::organisation.organisation'
+    > &
+      Attribute.Required;
+    channel: Attribute.Relation<
+      'api::livestream.livestream',
+      'manyToOne',
+      'api::channel.channel'
+    >;
+    host: Attribute.Relation<
+      'api::livestream.livestream',
+      'manyToOne',
+      'plugin::users-permissions.user'
+    > &
+      Attribute.Required;
+    viewers: Attribute.Relation<
+      'api::livestream.livestream',
+      'manyToMany',
+      'plugin::users-permissions.user'
+    >;
+    moderators: Attribute.Relation<
+      'api::livestream.livestream',
+      'manyToMany',
+      'plugin::users-permissions.user'
+    >;
+    createdAt: Attribute.DateTime;
+    updatedAt: Attribute.DateTime;
+    createdBy: Attribute.Relation<
+      'api::livestream.livestream',
+      'oneToOne',
+      'admin::user'
+    > &
+      Attribute.Private;
+    updatedBy: Attribute.Relation<
+      'api::livestream.livestream',
+      'oneToOne',
+      'admin::user'
+    > &
+      Attribute.Private;
+  };
+}
+
 export interface ApiOrganisationOrganisation extends Schema.CollectionType {
   collectionName: 'organisations';
   info: {
@@ -1211,11 +1331,13 @@ declare module '@strapi/types' {
       'plugin::users-permissions.permission': PluginUsersPermissionsPermission;
       'plugin::users-permissions.role': PluginUsersPermissionsRole;
       'plugin::users-permissions.user': PluginUsersPermissionsUser;
+      'api::agora-token.agora-token': ApiAgoraTokenAgoraToken;
       'api::channel.channel': ApiChannelChannel;
       'api::channel-invitation.channel-invitation': ApiChannelInvitationChannelInvitation;
       'api::country.country': ApiCountryCountry;
       'api::episode.episode': ApiEpisodeEpisode;
       'api::invitation.invitation': ApiInvitationInvitation;
+      'api::livestream.livestream': ApiLivestreamLivestream;
       'api::organisation.organisation': ApiOrganisationOrganisation;
       'api::seat-type.seat-type': ApiSeatTypeSeatType;
       'api::series.series': ApiSeriesSeries;

@@ -1,0 +1,44 @@
+{
+  "kind": "collectionType",
+  "collectionName": "agora_tokens",
+  "info": {
+    "singularName": "agora-token",
+    "pluralName": "agora-tokens",
+    "displayName": "Agora Token",
+    "description": "Store and manage Agora RTC tokens"
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "attributes": {
+    "token": {
+      "type": "text",
+      "required": true
+    },
+    "channelName": {
+      "type": "string",
+      "required": true
+    },
+    "expiresAt": {
+      "type": "datetime",
+      "required": true
+    },
+    "user": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "plugin::users-permissions.user",
+      "required": true
+    },
+    "organisation": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::organisation.organisation",
+      "required": true
+    },
+    "livestream": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::livestream.livestream"
+    }
+  }
+}

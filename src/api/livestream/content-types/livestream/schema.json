@@ -1,0 +1,96 @@
+{
+  "kind": "collectionType",
+  "collectionName": "livestreams",
+  "info": {
+    "singularName": "livestream",
+    "pluralName": "livestreams",
+    "displayName": "Livestream",
+    "description": "Manage live streaming sessions within organizations"
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "title": {
+      "type": "string",
+      "required": true
+    },
+    "description": {
+      "type": "text"
+    },
+    "status": {
+      "type": "enumeration",
+      "enum": [
+        "scheduled",
+        "live",
+        "ended"
+      ],
+      "default": "scheduled"
+    },
+    "startedAt": {
+      "type": "datetime"
+    },
+    "endedAt": {
+      "type": "datetime"
+    },
+    "scheduledStartTime": {
+      "type": "datetime"
+    },
+    "viewerCount": {
+      "type": "integer",
+      "default": 0
+    },
+    "recordingUrl": {
+      "type": "string"
+    },
+    "agoraChannel": {
+      "type": "string",
+      "unique": true
+    },
+    "agoraToken": {
+      "type": "string"
+    },
+    "isPrivate": {
+      "type": "boolean",
+      "default": false
+    },
+    "thumbnailUrl": {
+      "type": "string"
+    },
+    "allowChat": {
+      "type": "boolean",
+      "default": true
+    },
+    "maxViewers": {
+      "type": "integer"
+    },
+    "organisation": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::organisation.organisation",
+      "required": true
+    },
+    "channel": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::channel.channel"
+    },
+    "host": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "plugin::users-permissions.user",
+      "required": true
+    },
+    "viewers": {
+      "type": "relation",
+      "relation": "manyToMany",
+      "target": "plugin::users-permissions.user"
+    },
+    "moderators": {
+      "type": "relation",
+      "relation": "manyToMany",
+      "target": "plugin::users-permissions.user"
+    }
+  }
+}
